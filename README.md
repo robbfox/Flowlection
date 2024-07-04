@@ -1,3 +1,3 @@
 # airflowing
 
-### A shallow-dive into the world of Data pipelines using Apache Airflow
+### A shallow-dive into data pipelining using Apache Airflow
