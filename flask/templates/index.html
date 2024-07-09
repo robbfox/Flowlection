@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live ISS Tracker</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+    <style>
+        #map { height: 100vh; }
+        #info-box { position: absolute; top: 10px; left: 10px; background-color: white; padding: 10px; border: 1px solid #ccc; z-index: 1000; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="info-box">
+        <p><strong>ISS Altitude:</strong> <span id="altitude">Loading...</span></p>
+        <p><strong>ISS Speed:</strong> <span id="speed">Loading...</span></p>
+    </div>
+    <script>
+        const map = L.map('map').setView([0, 0], 2);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const issIcon = L.icon({
+            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/International_Space_Station.svg/64px-International_Space_Station.svg.png',
+            iconSize: [50, 32],
+            iconAnchor: [25, 16]
+        });
+
+        const marker = L.marker([0, 0], {icon: issIcon}).addTo(map); // Initial marker position
+
+        function updateISSLocation() {
+            fetch('/iss-location')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+                    const lat = data.latitude;
+                    const lon = data.longitude;
+                    const alt = data.altitude;
+                    const speed = data.velocity;
+
+                    marker.setLatLng([lat, lon]); // Update marker position
+                    map.panTo([lat, lon]); // Center map on the marker
+
+                    // Update altitude and speed info
+                    document.getElementById('altitude').textContent = `${alt} km`;
+                    document.getElementById('speed').textContent = `${speed} km/h`;
+                });
+        }
+
+        updateISSLocation(); // Initial update
+        setInterval(updateISSLocation, 5000); // Update every 5 seconds 
+    </script>
+</body>
+</html>
