@@ -162,4 +162,4 @@ cython_debug/
 #.idea/
 logs/
 plugins/
-data/latest_iss_location.json
+latest_iss_location.json
