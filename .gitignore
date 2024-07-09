@@ -163,4 +163,4 @@ cython_debug/
 logs/
 plugins/
 latest_iss_location.json
-data/latest_iss_location
+data/latest_iss_location.json
